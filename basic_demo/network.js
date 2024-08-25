@@ -77,12 +77,19 @@ class Level{
             for(let j = 0; j < level.inputs.length; j++) {
                 sum += level.inputs[j]*level.weights[j][i];
             }
-            if(sum > level.biases[i]) {
-                //output neruon
-                level.outputs[i] = 1;
-            } else {
-                level.outputs[i] = 0;
-            }
+            sum -= level.biases[i];
+
+            // Activation function:
+            // ReLu activation function
+            level.outputs[i] = Math.max(0, sum);
+
+            // high/low activation function
+            // if(sum > 0) {
+                    //output neruon
+            //     level.outputs[i] = 1;
+            // } else {
+            //     level.outputs[i] = 0;
+            // }
         }
         return level.outputs;
     }
