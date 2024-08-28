@@ -35,6 +35,10 @@ class Graph {
         return new Graph(points, segments);
     }
 
+    hash() {
+        return JSON.stringify(this);
+    }
+
     addPoint(point) {
         if(!this.containsPoint(point)) {
             this.points.push(point);
