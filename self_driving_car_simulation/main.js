@@ -25,7 +25,7 @@ const viewport = new Viewport(carCanvas, world.zoom, world.offset);
 const miniMap = new MiniMap(miniMapCanvas, world.graph, 300);
 
 //training amount
-const N = 1;
+const N = parseInt(sessionStorage.getItem("numCars"));
 const cars = generateCars(N);
 let bestCar = cars[0];
 // genetic function
@@ -37,7 +37,7 @@ if(localStorage.getItem("bestBrain")){
         if(i != 0) {
             // lower the value the more similar the cars' brain to other new gen AI
             // recommend initial = 10, fine tune = 0.05
-            NerualNetwork.mutate(cars[i].brain, 0.01); 
+            NerualNetwork.mutate(cars[i].brain, parseFloat(sessionStorage.getItem("geneticValue"))); 
         }
     }
 }

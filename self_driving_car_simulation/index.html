@@ -17,12 +17,33 @@
                 onchange="load(event)"
             />
         </label>
+        <input type="text" id="numCars" placeholder="enter cars">
+        <div style="display: flex; flex-direction: row; gap: 5%; color: aliceblue;">
+            <span style="margin-left: 5%;">Genetic value: </span><span id="geneticValue">0.5</span>
+        </div>
+        <input type="range" id="mySlider" min="0" max="1" value="0.5" step="0.01" oninput="updateValue()">
+        <button onclick="reload()">reload</button>
     </div>
     <div>
         <canvas id="networkCanvas"></canvas>
         <canvas id="miniMapCanvas"></canvas>       
     </div>
     <script>
+        function updateValue() {
+            var slider = document.getElementById("mySlider");
+            var valueDisplay = document.getElementById("geneticValue");
+            valueDisplay.textContent = slider.value;
+        }
+
+        function reload() {
+            var slider = document.getElementById("mySlider");
+            var inputBox = document.getElementById("numCars");
+            inputBox.value = inputBox.value != '' ? inputBox.value : 1;
+            sessionStorage.setItem("numCars", inputBox.value);
+            sessionStorage.setItem("geneticValue", slider.value);
+            location.reload();
+        }
+
         function load(event) {
             const file = event.target.files[0];
 
