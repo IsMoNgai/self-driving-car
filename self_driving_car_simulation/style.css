@@ -1,6 +1,6 @@
 body{
     margin:0;
-    background: darkgray;
+    background:#1e2124;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -30,7 +30,7 @@ button:hover{
     background:greenyellow;
 }
 #miniMapCanvas {
-    background:black;
+    background:	#282b30;
 }
 
 input[type="file"] {
