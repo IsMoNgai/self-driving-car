@@ -1,20 +1,23 @@
 class World {
     constructor(
         graph, 
-        roadWidth = 100, 
-        roadRoundness = 10,
-        buildingWidth = 150,
-        buildingMinLength = 150,
-        spacing = 50,
-        treeSize = 160
+        options = {}
     ) {
+        // roadWidth = 100, 
+        // roadRoundness = 10,
+        // buildingWidth = 150,
+        // buildingMinLength = 150,
+        // spacing = 50,
+        // treeSize = 160,
+        // showBuilding = true,
+        // showTree = true,
         this.graph = graph;
-        this.roadWidth = roadWidth;
-        this.roadRoundness = roadRoundness;
-        this.buildingWidth = buildingWidth;
-        this.buildingMinLength = buildingMinLength;
-        this.spacing = spacing;
-        this.treeSize = treeSize;
+        this.roadWidth = options.roadWidth ?? 100;
+        this.roadRoundness = options.roadRoundness ?? 10;
+        this.buildingWidth = options.buildingWidth ?? 150;
+        this.buildingMinLength = options.buildingMinLength ?? 150;
+        this.spacing = options.spacing ?? 50;
+        this.treeSize = options.treeSize ?? 160;
 
         this.envelopes = []; // road itself (type envelopes)
         this.roadBorders = []; // type Segments
@@ -50,7 +53,7 @@ class World {
         return world;
     }
 
-    generate() {
+    generate(genTree = true, genBuilding = true) {
         this.envelopes.length = 0;
         for (const seg of this.graph.segments) {
             this.envelopes.push(
@@ -59,8 +62,8 @@ class World {
         }
 
         this.roadBorders = Polygon.union(this.envelopes.map((e) => e.poly));
-        this.buildings = this.#generateBuildings();
-        this.trees = this.#generateTrees();
+        this.buildings = genBuilding ? this.#generateBuildings() : [];
+        this.trees = genTree ? this.#generateTrees() : [];
 
         this.laneGuides.length = 0;
         this.laneGuides.push(...this.#generateLaneGuides());
@@ -215,7 +218,7 @@ class World {
         return bases.map((b) => new Building(b));
     }
 
-    draw(ctx, viewPoint, showStartMarkings = true, renderRadius = 1000) {
+    draw(ctx, viewPoint, showStartMarkings = true, renderRadius = 1000, showBuilding = true, showTree = true) {
         for (const env of this.envelopes) {
             env.draw(ctx, {fill: "#BBB", stroke: "#BBB", lineWidth: 15});
         }
@@ -233,20 +236,29 @@ class World {
 
         // we need to group these two items tgt
         // so we can draw them in order based on viewPoint distance
-        const items = [...this.buildings, ...this.trees].filter(
-            (i) => i.base.distanceToPoint(viewPoint) < renderRadius 
-            // little optimization here: we only render things within a distance
-            // this is like most of the game you only render when you see it
-        );
-        items.sort(
-            // tree and building both have bases so we sort based on bases
-            // base are type Polygon so we can use poly.distanceToPoint
-            (a,b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint)
-        );
-        for (const item of items) {
-            // testing purposes
-            // tree.draw(ctx, {size: this.treeSize, color: "rgba(0,0,0,0.5)"});
-            item.draw(ctx, viewPoint);
+        const items = []
+        if(showBuilding) {
+            items.push(...this.buildings)
+        }
+        if(showTree) {
+            items.push(...this.trees)
+        }
+        if(items) {
+            items.filter(
+                (i) => i.base.distanceToPoint(viewPoint) < renderRadius 
+                // little optimization here: we only render things within a distance
+                // this is like most of the game you only render when you see it
+            );      
+            items.sort(
+                // tree and building both have bases so we sort based on bases
+                // base are type Polygon so we can use poly.distanceToPoint
+                (a,b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint)
+            );
+            for (const item of items) {
+                // testing purposes
+                // tree.draw(ctx, {size: this.treeSize, color: "rgba(0,0,0,0.5)"});
+                item.draw(ctx, viewPoint);
+            }      
         }
     }
  }

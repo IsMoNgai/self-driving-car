@@ -8,12 +8,68 @@
     <div id="verticalButtons">
         <button onclick="save()">💾</button>
         <button onclick="discard()">🗑️</button>
+        <label for="fileInput" class="file-input-label">
+            📁
+            <input 
+                type="file"
+                id="fileInput"
+                accept=".world"
+                onchange="load(event)"
+            />
+        </label>
     </div>
     <div>
         <canvas id="networkCanvas"></canvas>
         <canvas id="miniMapCanvas"></canvas>       
     </div>
+    <script>
+        function load(event) {
+            const file = event.target.files[0];
 
+            if (!file) {
+                alert("No file selected.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsText(file);
+
+            reader.onload = (evt) => {
+                const fileContent = evt.target.result;
+                const jsonData = JSON.parse(fileContent);
+                world = World.load(jsonData);
+
+                try {
+                    localStorage.setItem("world", JSON.stringify(world));
+                    location.reload();
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        loadBigMap(world); // Call the function to handle large maps
+                    } else {
+                        console.error("An error occurred while saving 'world':", e);
+                    }
+                }
+            };
+        }
+
+        function loadBigMap(world) {
+            // handle big folder by saving a file copy to the user download directory
+            // and read the file from there
+            const element = document.createElement("a");
+            element.setAttribute(
+                "href",
+                "data:application/json;charset=utf-8," +
+                    encodeURIComponent(JSON.stringify(world))
+            );
+            element.setAttribute("download", "large_world.json");
+
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+
+    </script>
     <script src="world/js/world.js"></script>
     <script src="world/js/viewport.js"></script>
     <script src="world/js/markings/Marking.js"></script>

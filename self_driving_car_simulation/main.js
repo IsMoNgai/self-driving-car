@@ -14,19 +14,18 @@ networkCanvas.height = window.innerHeight - 300;
 const carCtx = carCanvas.getContext("2d");
 const networkCtx = networkCanvas.getContext("2d");
 
-/*
-const worldString = localStorage.getItem("world");
-const worldInfo = worldString ? JSON.parse(worldString) : null;
-const world = worldInfo 
+let worldString = localStorage.getItem("world");
+let worldInfo = worldString ? JSON.parse(worldString) : null;
+let world = worldInfo 
     ? World.load(worldInfo) 
     : new World(new Graph());
-*/
+
 
 const viewport = new Viewport(carCanvas, world.zoom, world.offset);
 const miniMap = new MiniMap(miniMapCanvas, world.graph, 300);
 
 //training amount
-const N = 20;
+const N = 1;
 const cars = generateCars(N);
 let bestCar = cars[0];
 // genetic function
@@ -38,7 +37,7 @@ if(localStorage.getItem("bestBrain")){
         if(i != 0) {
             // lower the value the more similar the cars' brain to other new gen AI
             // recommend initial = 10, fine tune = 0.05
-            NerualNetwork.mutate(cars[i].brain, 0.05); 
+            NerualNetwork.mutate(cars[i].brain, 0.01); 
         }
     }
 }

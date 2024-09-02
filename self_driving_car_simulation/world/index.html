@@ -7,35 +7,55 @@
     <body>
         <!-- <h1>World Editor</h1> -->
         <h1></h1>
-        <canvas id="myCanvas"></canvas>
-        <div id="controls">
-            <button onclick="dispose()">Remove All</button>
-            <button onclick="save()">Save</button>
-            <label for="fileInput" class="file-input-label">
-                📁
-                <input 
-                    type="file"
-                    id="fileInput"
-                    accept=".world"
-                    onchange="load(event)"
-                />
-            </label>
-            <button onclick="openOsmPanel()">🗺️</button>
-            &nbsp;
-            <button id="graphBtn" onclick="setMode('graph')">🌐</button>
-            <button id="stopBtn" onclick="setMode('stop')">🛑</button>
-            <button id="crossingBtn" onclick="setMode('crossing')">🧍</button>
-            <button id="startBtn" onclick="setMode('start')">🚗</button>
-        
-            <div id="osmPanel" style="display:none">
-                <a href="https://overpass-turbo.eu/#">click here</a>
-                <textarea id="osmDataContainer" rows="10" cols="50" placeholder="Paste OSM data here"></textarea>
-                <div>
-                    <button onclick="parseOsmData()">open</button>
-                    <button onclick="closeOsmPanel()">close</button>
-                </div>
+        <div style="display: flex; flex-direction: row;">
+            <div style="padding-left: 10%">
+                <canvas id="myCanvas"></canvas>
+                <div id="controls">
+                    <button onclick="dispose()">Remove All</button>
+                    <button onclick="save()">Save</button>
+                    <label for="fileInput" class="file-input-label">
+                        📁
+                        <input 
+                            type="file"
+                            id="fileInput"
+                            accept=".world"
+                            onchange="load(event)"
+                        />
+                    </label>
+                    <button onclick="openOsmPanel()">🗺️</button>
+                    &nbsp;
+                    <button id="graphBtn" onclick="setMode('graph')">🌐</button>
+                    <button id="stopBtn" onclick="setMode('stop')">🛑</button>
+                    <button id="crossingBtn" onclick="setMode('crossing')">🧍</button>
+                    <button id="startBtn" onclick="setMode('start')">🚗</button>
+                    <button id="showTreeBtn" onclick="toggleShowTree()">🌳</button>
+                    <button id="showBuildingBtn" onclick="toggleShowBuilding()">🏢</button>
+                
+                    <div id="osmPanel" style="display:none">
+                        <a href="https://overpass-turbo.eu/#">click here</a>
+                        <textarea id="osmDataContainer" rows="10" cols="50" placeholder="Paste OSM data here"></textarea>
+                        <div>
+                            <button onclick="parseOsmData()">open</button>
+                            <button onclick="closeOsmPanel()">close</button>
+                        </div>
+                    </div>
+                </div>            
+            </div>
+            <div style="width: 100%; display: flex; justify-content: left; flex-direction: column; padding-left: 2%;">
+                <h4 style="text-align: left; margin-bottom: 0%;">Generate Tree</h4>
+                <label class="switch">
+                    <input type="checkbox" id="genTree">
+                    <span class="slider round"></span>
+                </label>
+                <h4 style="text-align: left; margin-bottom: 0%;">Generate Building</h4>
+                <label class="switch">
+                    <input type="checkbox" id="genBuilding">
+                    <span class="slider round"></span>
+                </label>
+                <a style="text-align: left; color: white; padding-top: 5%;" href="../index.html">Run Simulation</a>
             </div>
         </div>
+
     
         <script src="js/world.js"></script>
         <script src="js/viewport.js"></script>
@@ -60,6 +80,9 @@
         <script>
             myCanvas.width = 600;
             myCanvas.height = 600;
+
+            let showTree = true;
+            let showBuilding = true;
 
             const ctx = myCanvas.getContext("2d");
 
@@ -89,17 +112,19 @@
   
             function animate() {
                 viewport.reset();
+                const genTree = document.getElementById("genTree").checked;
+                const genBuilding = document.getElementById("genBuilding").checked;
                 // create a unique identifier so we only generate random trees once
                 if (graph.hash() != oldGraphHash) {
                     // for future optimization one can generate graph first then generate world
                     // so it will boost the generation speed for just graph design 
                     // and when you are ready then generate the whole world
-                    world.generate();              
+                    world.generate(genTree, genBuilding);              
                     oldGraphHash = graph.hash();      
                 }
                 
                 const viewPoint = scale(viewport.getOffset(), -1);
-                world.draw(ctx, viewPoint);
+                world.draw(ctx, viewPoint, true, 1000, showBuilding, showTree);
                 ctx.globalAlpha = 0.3;
                 for (const tool of Object.values(tools)) {
                     tool.editor.display();
@@ -132,6 +157,41 @@
 
                 localStorage.setItem("world", JSON.stringify(world));
             }
+
+            function toggleShowBuilding() {
+                showBuilding = !showBuilding;
+                if(!showBuilding) {
+                    showBuildingBtn.style.backgroundColor = "gray";
+                    showBuildingBtn.style.filter= "grayscale(100%)";
+                } else {
+                    showBuildingBtn.style.backgroundColor = "white";
+                    showBuildingBtn.style.filter= "";
+                }
+
+            }
+
+            function toggleShowTree() {
+                showTree = !showTree;
+                if(!showTree) {
+                    showTreeBtn.style.backgroundColor = "gray";
+                    showTreeBtn.style.filter= "grayscale(100%)";
+                } else {
+                    showTreeBtn.style.backgroundColor = "white";
+                    showTreeBtn.style.filter= "";
+                }
+            }
+
+            document.getElementById("genTree").addEventListener("change", () => {
+                const genTree = document.getElementById("genTree").checked;
+                const genBuilding = document.getElementById("genBuilding").checked;
+                world.generate(genTree, genBuilding);
+            });
+
+            document.getElementById("genBuilding").addEventListener("change", () => {
+                const genTree = document.getElementById("genTree").checked;
+                const genBuilding = document.getElementById("genBuilding").checked;
+                world.generate(genTree, genBuilding);
+            });
 
             function load(event) {
                 const file = event.target.files[0];
