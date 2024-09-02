@@ -13,11 +13,18 @@ class Start extends Marking {
         ctx.rotate(angle(this.directionVector)-Math.PI/2);
         
         ctx.beginPath();
-        ctx.rect(-15, -15, 30, 30);
-        ctx.fillStyle = "blue";
+        ctx.rect(-15, -15, 30, 40);
+        ctx.fillStyle = "yellow";
         ctx.fill();
-        ctx.strokeStyle = "black";
-        ctx.stroke();
+        ctx.beginPath();
+        ctx.rect(-15, 0, 30, 40);
+        ctx.fillStyle = "black";
+        ctx.fill();
+
+        // ctx.rect(-15, -15, 30, 40);
+        // ctx.strokeStyle = "black";
+        // ctx.strokeWidth = 10;
+        // ctx.stroke();
         
         // ctx.drawImage(this.img, -this.img.width/2, -this.img.height/2);
 
