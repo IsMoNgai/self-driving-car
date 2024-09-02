@@ -31,6 +31,7 @@ const geneticValueStr = sessionStorage.getItem("geneticValue");
 const geneticValue = isNaN(parseFloat(sessionStorage.getItem("geneticValue"))) ? 0.5 : parseFloat(sessionStorage.getItem("geneticValue"));
 const cars = generateCars(N);
 let bestCar = cars[0];
+
 // genetic function
 if(localStorage.getItem("bestBrain")){
     for(let i = 0; i < cars.length; i++) {
