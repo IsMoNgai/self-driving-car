@@ -25,6 +25,7 @@ const viewport = new Viewport(carCanvas, world.zoom, world.offset);
 const miniMap = new MiniMap(miniMapCanvas, world.graph, 300);
 
 //training amount
+const maxSpeed = sessionStorage.getItem("maxSpeed");
 const numCarsStr = sessionStorage.getItem("numCars");
 const N = isNaN(parseInt(numCarsStr, 10)) ? 1 : parseInt(numCarsStr, 10);
 const geneticValueStr = sessionStorage.getItem("geneticValue");
@@ -76,7 +77,7 @@ function generateCars(N) {
 
     const cars=[];
     for(let i = 1; i <= N; i++) {
-        cars.push(new Car(startPoint.x, startPoint.y, 30, 50, "AI", startAngle))
+        cars.push(new Car(startPoint.x, startPoint.y, 30, 50, "AI", startAngle, maxSpeed))
     }
     return cars;
 }
