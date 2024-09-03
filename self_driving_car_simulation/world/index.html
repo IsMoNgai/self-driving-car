@@ -52,11 +52,10 @@
                     <input type="checkbox" id="genBuilding">
                     <span class="slider round"></span>
                 </label>
-                <span style="text-align: left; color: white; padding-top: 5%;">Save Before Running Simulation❗❗❗</span>
-                <a style="text-align: left; color: white; padding-top: 5%;" href="../">Run Simulation</a>
+                <button onclick="loadSample()">Load Sample Map</button>
+                <a style="text-align: left; color: white; padding-top: 5%;" onclick="save()" href="../">Save & Run Simulation</a>
             </div>
         </div>
-
     
         <script src="js/world.js"></script>
         <script src="js/viewport.js"></script>
@@ -78,6 +77,8 @@
         <script src="js/primitives/segment.js"></script>
         <script src="js/primitives/polygon.js"></script>
         <script src="js/primitives/envelope.js"></script>
+
+        <script src="saves/sample.world"></script>
         <script>
             myCanvas.width = 600;
             myCanvas.height = 600;
@@ -193,6 +194,12 @@
                 const genBuilding = document.getElementById("genBuilding").checked;
                 world.generate(genTree, genBuilding);
             });
+
+            function loadSample() {
+                world = sample;
+                localStorage.setItem("world", JSON.stringify(sample));
+                location.reload();
+            }
 
             function load(event) {
                 const file = event.target.files[0];

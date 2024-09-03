@@ -66,23 +66,37 @@ function discard() {
 
 function generateCars(N) {
     const startPoints = world.markings.filter((m) => m instanceof Start);
-    const startPoint = startPoints.length > 0
-        ? startPoints[0].center
-        : new Point(100, 100);
+    const cars = [];
 
-    const dir = startPoints.length > 0
-        ? startPoints[0].directionVector
-        : new Point(0, -1);
-    const startAngle = - angle(dir) + Math.PI / 2;
+    if (startPoints.length > 0) {
+        // Loop through each start point
+        for (const startPoint of startPoints) {
+            const dir = startPoint.directionVector;
+            const startAngle = -angle(dir) + Math.PI / 2;
 
-    const cars=[];
-    for(let i = 1; i <= N; i++) {
-        cars.push(new Car(startPoint.x, startPoint.y, 30, 50, "AI", startAngle, maxSpeed))
+            // Generate N cars at each start point
+            for (let i = 1; i <= N; i++) {
+                cars.push(new Car(startPoint.center.x, startPoint.center.y, 30, 50, "AI", startAngle, maxSpeed));
+            }
+        }
+    } else {
+        // Fallback to a default start point if no startPoints are found
+        const defaultPoint = new Point(100, 100);
+        const dir = new Point(0, -1);
+        const startAngle = -angle(dir) + Math.PI / 2;
+
+        // Generate N cars at the default start point
+        for (let i = 1; i <= N; i++) {
+            cars.push(new Car(defaultPoint.x, defaultPoint.y, 30, 50, "AI", startAngle, maxSpeed));
+        }
     }
+
     return cars;
 }
 
 function animate(time) {
+    carPOV = document.getElementById("carPOV").checked;
+  
     for(let i = 0; i < traffic.length; i++) {
         // we dont want traffic to get damage so 2nd arg is []
         traffic[i].update(roadBorders, []);
@@ -104,12 +118,19 @@ function animate(time) {
 
     // making the viewpoint base on the best car
     // can make a bool to control this later
-    viewport.offset.x = -bestCar.x;
-    viewport.offset.y = -bestCar.y;
-    viewport.reset();
-    const viewPoint = scale(viewport.getOffset(), -1);
-    world.draw(carCtx, viewPoint, false);
-    miniMap.update(viewPoint);
+    if(carPOV) {
+        viewport.offset.x = -bestCar.x;
+        viewport.offset.y = -bestCar.y;
+        viewport.reset();
+        const viewPoint = scale(viewport.getOffset(), -1);
+        world.draw(carCtx, viewPoint, false);
+        miniMap.update(viewPoint);
+    } else {
+        viewport.reset();
+        const viewPoint = scale(viewport.getOffset(), -1);
+        world.draw(carCtx, viewPoint, false);
+        miniMap.update(viewPoint);
+    }
 
     // car rendering
     carCtx.globalAlpha=0.2;

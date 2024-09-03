@@ -24,6 +24,13 @@
         </div>
         <input type="range" id="mySlider" min="0" max="1" value="0.5" step="0.01" oninput="updateValue()">
         <button onclick="reload()">reload</button>
+        <div style="color: aliceblue; display: flex; flex-direction: row; gap: 5%; justify-content: center;">
+            <h4 style="text-align: left; margin: 0%;">Follow Best Car: </h4>
+            <label class="switch">
+                <input type="checkbox" id="carPOV">
+                <span class="slider round"></span>
+            </label>            
+        </div>
     </div>
     <div>
         <canvas id="networkCanvas"></canvas>
