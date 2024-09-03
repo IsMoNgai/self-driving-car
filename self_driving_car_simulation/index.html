@@ -29,6 +29,11 @@
         <canvas id="miniMapCanvas"></canvas>       
     </div>
     <script>
+        document.getElementById("numCars").value = sessionStorage.getItem("numCars") ?? '';
+        document.getElementById("mySlider").value = sessionStorage.getItem("geneticValue") ?? 0.5;
+
+        updateValue()
+
         function updateValue() {
             var slider = document.getElementById("mySlider");
             var valueDisplay = document.getElementById("geneticValue");
@@ -38,7 +43,7 @@
         function reload() {
             var slider = document.getElementById("mySlider");
             var inputBox = document.getElementById("numCars");
-            inputBox.value = inputBox.value != '' ? inputBox.value : 1;
+            inputBox.value = inputBox.value != '' ? inputBox.value : (sessionStorage.getItem("numCars", inputBox.value) ?? 1);
             sessionStorage.setItem("numCars", inputBox.value);
             sessionStorage.setItem("geneticValue", slider.value);
             location.reload();
